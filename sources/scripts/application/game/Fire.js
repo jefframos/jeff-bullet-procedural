@@ -19,7 +19,7 @@ var Fire = Entity.extend({
     getBounds: function(){
         this.bounds = {x: this.getPosition().x-this.width/2, y: this.getPosition().y-this.height/2, w: this.width, h: this.height};
         this.centerPosition = {x:this.width/2, y:this.height/2};
-        
+
         this.collisionPoints = {
             up:{x:this.bounds.x + this.bounds.w / 2, y:this.bounds.y},
             down:{x:this.bounds.x + this.bounds.w / 2, y:this.bounds.y + this.bounds.h},
@@ -62,7 +62,7 @@ var Fire = Entity.extend({
         }
     },
     build: function(){
-        this._super('_dist/img/fireball.png');
+        this._super('dist/img/fireball.png');
         this.updateable = true;
         this.collidable = true;
         // var self = this;
@@ -114,7 +114,7 @@ var Fire = Entity.extend({
             this.updateable = false;
             this.collidable = false;
             TweenLite.to(this.getContent().scale, 0.3, {x:0.2, y:0.2, onComplete:function(){self.kill = true;}});
-            
+
             if(this.debugGraphic.parent){
                 this.debugGraphic.parent.removeChild(this.debugGraphic);
             }

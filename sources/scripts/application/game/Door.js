@@ -59,7 +59,7 @@ var Door = Entity.extend({
         }
     },
     build: function(){
-        this._super('_dist/img/cubo2.png');
+        this._super('dist/img/cubo2.png');
         var self = this;
         this.debugGraphic = new PIXI.Graphics();
         this.debugGraphic.beginFill(0xFF3300);

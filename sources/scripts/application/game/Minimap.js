@@ -70,7 +70,7 @@ var Minimap = Class.extend({
 					if (minY > item[i].position[0]){
 						minY = item[i].position[0];
 					}
-						
+
 					if (maxX < item[i].position[1]){
 						maxX = item[i].position[1];
 					}

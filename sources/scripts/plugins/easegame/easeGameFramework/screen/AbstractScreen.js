@@ -22,7 +22,7 @@ var AbstractScreen = Class.extend({
 	},
 	//inicia o carregamento dos assets
 	initLoad:function()
-	{		
+	{
 		var that = this;
 		this.loader.onComplete = function() {
 			that.onAssetsLoaded();
@@ -34,7 +34,7 @@ var AbstractScreen = Class.extend({
 	},
 	build:function()
 	{
-        if(AbstractScreen.debug)console.log('build',this.screenLabel);		
+        if(AbstractScreen.debug)console.log('build',this.screenLabel);
 	},
 	//calcula distancia entre dois pontos, utilizada para a colisão
 	getContent: function(){
@@ -61,12 +61,14 @@ var AbstractScreen = Class.extend({
 	addChild: function(child){
 		this.childs.push(child);
 
-		if(child.getContent != undefined)
+		if(child.getContent != undefined){
 			this.container.addChild(child.getContent());
-		else
+		}
+		else{
 			this.container.addChild(child);
+		}
 
-		
+
 	},
 	//remove a entidade da camada e do palco
 	removeChild: function(child){
@@ -88,7 +90,7 @@ var AbstractScreen = Class.extend({
 
 				}
 				return;
-			}			
+			}
 		}
 	},
 	//atualiza a camada e os filhos, verifica se alguma entidade está "kill", se estiver, remove do palco e da camada
@@ -98,12 +100,12 @@ var AbstractScreen = Class.extend({
 			if(this.childs[i].kill){
 				this.removeChild(this.childs[i]);
 			}
-			
+
 			if(this.childs[i]){
-				if(this.childs[i].updateable){				
-					this.childs[i].update();	
+				if(this.childs[i].updateable){
+					this.childs[i].update();
 				}
-			}				
+			}
 		}
 	},
 	transitionIn:function()
@@ -119,12 +121,12 @@ var AbstractScreen = Class.extend({
 		nextScreen.transitionIn();
 	},
 	destroy:function()
-	{    
+	{
 		if(AbstractScreen.debug)console.log('destroy', this.screenLabel);
 		while (this.childs.length > 0)
 		{
 			var temp = this.childs[0];
-			
+
 			//if(temp.parent)
 			this.removeChild(this.childs[0]);
 				//console.log(temp);

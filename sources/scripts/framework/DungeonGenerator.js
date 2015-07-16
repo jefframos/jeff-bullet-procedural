@@ -6,7 +6,7 @@ var DungeonGenerator = Class.extend({
 		this.maxDist=5;
 		this.minNodes=5;
 		this.seeds=1;
-		this.rooms = [];//nodeModel
+		this.rooms = [];
 		this.maxNodes = 10;
 		this.mostDistant = new NodeModel();
 		this.nodeLock = new NodeModel();
@@ -15,19 +15,17 @@ var DungeonGenerator = Class.extend({
 		this.precision = 1;
 		this.seed = 0;
 		this.rooms = [];
-
 	},
 	generate:function(seed, precision, minMax, bounds,maxLenght, start)
 	{
 		this.seed = seed;
-		console.log('seed', seed);
 		random = 0;
 		if(maxLenght < 0){
 			maxLenght = 99999;
 		}
 		this.minNodes = minMax[0];
 		this.maxNodes = minMax[1];
-		
+
 		this.precision = precision;
 		this.numActivesNodes = 0;
 		this.maxDist = -999999999;
@@ -51,7 +49,7 @@ var DungeonGenerator = Class.extend({
 
 		this.generateNodes(start?start[0]:Math.floor(bounds[0]/2), start?start[1]:Math.floor(bounds[1]/2),null,maxLenght);
 		this.mostDistant.mode = 4;
-		
+
 		var keyDistance = -9999999999;
 
 		for (k = 0; k < this.rooms.length; k++)
@@ -72,25 +70,15 @@ var DungeonGenerator = Class.extend({
 				}
 			}
 		}
-		
+
 		if(this.nodeLock){
 			this.nodeLock.mode = 5;
 		}
 		if (this.keyNode){
 			this.keyNode.mode = 6;
 		}
-
-		//atribui os filhos
-		// if (item[i].parentPosition[0] < item[i].position[0])
-		// 						tempRoomView.a_left.visible = true;
-		// 					if (item[i].parentPosition[0] > item[i].position[0])
-		// 						tempRoomView.a_right.visible = true;
-		// 					if (item[i].parentPosition[1] < item[i].position[1])
-		// 						tempRoomView.a_up.visible = true;
-		// 					if (item[i].parentPosition[1] > item[i].position[1])
-		// 						tempRoomView.a_down.visible = true;
 	},
-	
+
 	log:function()
 	{
 		for (var i = 0; i < this.rooms.length; i++)
@@ -135,12 +123,10 @@ var DungeonGenerator = Class.extend({
 		console.log(this.firstNode);
 
 	},
-	
+
 	generateNodes:function(i, j, parent, maxLeght, forceAdd)
 	{
 		if ((this.numActivesNodes >= this.maxNodes || maxLeght <= 0) && !forceAdd){
-			console.log('maxLeght ', maxLeght, !forceAdd);
-
 			return;
 		}
 		if (this.numActivesNodes > 50){
@@ -165,17 +151,11 @@ var DungeonGenerator = Class.extend({
 			if(forceAdd){
 				console.log('numActivesNodes', this.numActivesNodes);
 			}
-			//minNodes ++;
 			return;
 		}
 
-		// if ((!node.active || (node.active && node.id === 1)) || forceAdd)
 		if (!node.active || forceAdd)
 		{
-			// if (node.id === 1){
-			// 	return;
-			// }
-			
 			this.minNodes--;
 			node.mode = 2;
 			this.numActivesNodes++;
@@ -185,7 +165,6 @@ var DungeonGenerator = Class.extend({
 			}
 			if (parent && node.id !== 1)
 			{
-				console.log('o id ', node.id, ' é filho de ', parent.id);
 				node.parentPosition = parent.position;
 				node.parentId = parent.id;
 				node.parent = parent;
@@ -203,7 +182,7 @@ var DungeonGenerator = Class.extend({
 					for (nj = tempNodeArray.length - 1; nj >= 0; nj--) {
 						if(tempNodeArray[nj].id === node.parentId)
 						{
-							//o i e o j são invertidos
+							// i and j are inverted
 							if (tempNodeArray[nj].position[1] > node.position[1]){
 								tempNodeArray[nj].childrenSides[0] = node;
 							}
@@ -216,12 +195,12 @@ var DungeonGenerator = Class.extend({
 							else if (tempNodeArray[nj].position[0] < node.position[0]){
 								tempNodeArray[nj].childrenSides[3] = node;
 							}
-								
+
 						}
 					}
 				}
 
-				//o i e o j são invertidos
+				// i and j are inverted
 				if (node.parent.position[1] < node.position[1]){
 					node.childrenSides[0] = node.parent;
 				}
@@ -229,7 +208,6 @@ var DungeonGenerator = Class.extend({
 					node.childrenSides[1] = node.parent;
 				}
 				else if (node.parent.position[0] < node.position[0]){
-					console.log('o node ', node.id,' tem um pai em cima');
 					node.childrenSides[2] = node.parent;
 				}
 				else if (node.parent.position[0] > node.position[0]){
@@ -245,29 +223,21 @@ var DungeonGenerator = Class.extend({
 		}
 		else
 		{
-			// if(forceAdd){
-			// 	console.log('forceAdd3', forceAdd);
-			// }
 			this.minNodes++;
-			// console.log('return seed No node ', this.seed, node);
 			return;
 		}
-		
+
 		{
 			var has = false;
-			//if (random.nextNumber() < seeds || this.minNodes > 0)
-			//if (Math.random() < this.seeds || this.minNodes > 0)
 			if (this.getNextFloat() < this.seeds || this.minNodes > 0)
 			{
 				this.seeds *= this.precision;
 				var tmpArr = [0, 0];
 				var arrayGens = [];
-				var rndTest = node.id === 1;// || this.getNextFloat() < 0.5;
+				var rndTest = node.id === 1;
 				var rndValue = rndTest ? 0.9 : 0.4;
 				for (var k = 0; k < 4; k++)
 				{
-					//if (random.nextNumber() < rndValue)
-					//if (Math.random() < rndValue)
 					if (this.getNextFloat() < rndValue)
 					{
 						has = true;
@@ -305,7 +275,7 @@ var DungeonGenerator = Class.extend({
 				}
 				if (this.minNodes > 0 || this.seeds >= 1)
 				{
-					var tempRnd = this.getNextFloat();// Math.random();//random.nextNumber();
+					var tempRnd = this.getNextFloat();
 					if (tempRnd < 0.25)
 					{
 						tmpArr = [-1, 0];

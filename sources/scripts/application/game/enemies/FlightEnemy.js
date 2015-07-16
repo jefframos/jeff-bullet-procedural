@@ -58,7 +58,7 @@ var FlightEnemy = Enemy.extend({
         this.debugGraphic.endFill();
     },
     update: function(){
-        
+
 
         // this.debug();
         this._super();
@@ -78,7 +78,7 @@ var FlightEnemy = Enemy.extend({
         this.acumSimCos += 0.05;
         this.virtualVelocity.x = Math.sin(this.acumSimCos) * 5;
         this.virtualVelocity.y = Math.cos(this.acumSimCos) * 5;
-        
+
     },
     preKill:function(){
         var self = this;
@@ -90,7 +90,6 @@ var FlightEnemy = Enemy.extend({
         return Math.sqrt((x -= x0) * x + (y -= y0) * y);
     },
     touch: function(collection){
-        console.log('colidiu o bicho aqui', collection);
         this.isTouch = true;
         if(collection.left||collection.right && this.virtualVelocity.x !== 0)
         {

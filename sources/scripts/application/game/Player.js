@@ -89,6 +89,7 @@ var Player = SpritesheetEntity.extend({
         this.debugGraphic.lineStyle(1, 0xffd900, 1);
         this.debugGraphic.endFill();
 
+        this.vecPositions = [];
 
     },
     update: function(){
@@ -118,6 +119,7 @@ var Player = SpritesheetEntity.extend({
         this.spritesheet.play('idle');
         this.setVelocity(0,0);
         this.updateable = true;
+        this.vecPositions = [];
         // console.log('radius player', this.range);
 
         // this.spritesheet.setScale(0,0);
@@ -149,7 +151,6 @@ var Player = SpritesheetEntity.extend({
     },
     touch: function(collection){
         this.isTouch = true;
-        console.log(collection);
         if(collection.left||collection.right && this.virtualVelocity.x !== 0)
         {
             this.velocity.x = 0;
@@ -157,6 +158,48 @@ var Player = SpritesheetEntity.extend({
         if(collection.up|| collection.down && this.virtualVelocity.y !== 0)
         {
             this.velocity.y = 0;
+        }
+    },
+    updatePlayerVel:function(vecPositions)
+    {
+        if(this && vecPositions){
+            var hasAxysY = false;
+            var hasAxysX = false;
+            if(vecPositions.length === 0){
+                this.virtualVelocity.x = 0;
+                this.virtualVelocity.y = 0;
+            }
+            for (var i = vecPositions.length - 1; i >= 0; i--) {
+
+                if(vecPositions[i] === 'up'){
+                    this.virtualVelocity.y = -this.defaultVelocity;
+                    hasAxysY = true;
+                }
+                else if(vecPositions[i] === 'down'){
+                    this.virtualVelocity.y = this.defaultVelocity;
+                    hasAxysY = true;
+                }
+
+                if(vecPositions[i] === 'left'){
+                    this.virtualVelocity.x = -this.defaultVelocity;
+                    hasAxysX = true;
+                }
+                else if(vecPositions[i] === 'right'){
+                    this.virtualVelocity.x = this.defaultVelocity;
+                    hasAxysX = true;
+                }
+            }
+            if(this.virtualVelocity.y !== 0 && this.virtualVelocity.x !== 0){
+                this.virtualVelocity.y /= 1.5;
+                this.virtualVelocity.x /= 1.5;
+            }
+            if(!hasAxysY){
+                this.virtualVelocity.y = 0;
+            }
+            if(!hasAxysX){
+                this.virtualVelocity.x = 0;
+            }
+
         }
     },
 });

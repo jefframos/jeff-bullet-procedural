@@ -4,10 +4,12 @@ var DesktopMainScreen = AbstractScreen.extend({
         MicroEvent.mixin(this);
         this._super(label);
 
-        var bg = new SimpleSprite('_dist/img/rascunho-mapa.jpg');
-        this.addChild(bg);
-        // bg.getContent().scale.x = 0.5;
-        // bg.getContent().scale.y = 0.5;
+        this.levelContainer = new PIXI.DisplayObjectContainer();
+        this.addChild(this.levelContainer);
+
+        var bg = new SimpleSprite('dist/img/rascunho-mapa.jpg');
+        this.levelContainer.addChild(bg.getContent());
+
         this.currentAppModel = new AppModel();
 
         this.mainLayer = new Layer('main');
@@ -16,12 +18,12 @@ var DesktopMainScreen = AbstractScreen.extend({
         this.environmentLayer = new Layer('environment');
         this.layerManager = new LayerManager();
         this.layerManager.addLayer(this.environmentLayer);
-
         this.layerManager.addLayer(this.entityLayer);
-        this.addChild(this.layerManager);
+
+        this.levelContainer.addChild(this.layerManager.getContent());
+
         this.margin = {x:APP.tileSize.x / 2 * 3,y:160 / 2};
         this.mouseDown = false;
-
     },
     destroy: function () {
         this._super();
@@ -29,17 +31,14 @@ var DesktopMainScreen = AbstractScreen.extend({
     build: function () {
         this._super();
         var assetsToLoader = [
-            '_dist/img/spritesheet/dragon.json',
-            '_dist/img/spritesheet/dragon.png',
-        // '_dist/img/chinesa.png',
-            '_dist/img/dragao-perdido.png',
-            // '_dist/img/drop.png',
-            '_dist/img/fireball.png',
-            '_dist/img/spritesheet/chinesa.json',
-            '_dist/img/spritesheet/finn.json',
-            '_dist/img/spritesheet/finn.png',
-            // '_dist/img/rascunho-mapa.jpg',
-            '_dist/img/spritesheet/chinesa.png'
+            'dist/img/spritesheet/dragon.json',
+            'dist/img/spritesheet/dragon.png',
+            'dist/img/dragao-perdido.png',
+            'dist/img/fireball.png',
+            'dist/img/spritesheet/chinesa.json',
+            'dist/img/spritesheet/finn.json',
+            'dist/img/spritesheet/finn.png',
+            'dist/img/spritesheet/chinesa.png'
         ];
         this.loader = new PIXI.AssetLoader(assetsToLoader);
         this.initLoad();
@@ -49,95 +48,23 @@ var DesktopMainScreen = AbstractScreen.extend({
         this._super();
 
         this.currentNode = APP.gen.firstNode;
-        console.log('this.currentNode', this.currentNode);
-        // SOCKET.updateObj({user:{isMobile:false}});
-        // SOCKET.updateObj({socket:this.currentAppModel});
         this.rainContainer = new PIXI.DisplayObjectContainer();
 
         var self = this;
 
-        this.vecPositions = [];
-        document.body.addEventListener('mouseup', function(e){
-            self.mouseDown = false;
-        });
-        document.body.addEventListener('mousedown', function(e){
-            self.mouseDown = true;
-            self.player.fireFreqAcum = 0;
-        });
-        document.body.addEventListener('keyup', function(e){
-            if(self.player){
-                if(e.keyCode === 87 || e.keyCode === 38 && self.player.velocity.y < 0){
-                    self.removePosition('up');
-                }
-                else if(e.keyCode === 83 || e.keyCode === 40 && self.player.velocity.y > 0){
-                    self.removePosition('down');
-                }
-                else if(e.keyCode === 65 || e.keyCode === 37 && self.player.velocity.x < 0){
-                    self.removePosition('left');
-                }
-                else if(e.keyCode === 68 || e.keyCode === 39 && self.player.velocity.x > 0){
-                    self.removePosition('right');
-                }
-                self.updatePlayerVel();
-            }
-        });
-        document.body.addEventListener('keydown', function(e){
-            var vel = 6;
-            //console.log('keydown');
+        //apply movment
+        this.inputManager = new InputManager(this);
 
-            if(e.keyCode === 87 || e.keyCode === 38){
-                self.removePosition('down');
-                self.addPosition('up');
-            }
-            else if(e.keyCode === 83 || e.keyCode === 40){
-                self.removePosition('up');
-                self.addPosition('down');
-            }
-            else if(e.keyCode === 65 || e.keyCode === 37){
-                self.removePosition('right');
-                self.addPosition('left');
-            }
-            else if(e.keyCode === 68 || e.keyCode === 39){
-                self.removePosition('left');
-                self.addPosition('right');
-            }
-            self.updatePlayerVel();
 
-        });
-        var tempRain = null;
-        this.vecRain = [];
-        for (var j = 300; j >= 0; j--) {
-            tempRain = new RainParticle(50, 5, windowWidth + 200, windowHeight, 'left');
-            this.rainContainer.addChild(tempRain.content);
-            this.vecRain.push(tempRain);
-        }
-
-        this.mascara = new PIXI.Graphics();
-        this.mascara.beginFill(0xFFFF00);
-        // set the line style to have a width of 5 and set the color to red
-        this.mascara.lineStyle(5, 0xFF0000);
-        this.mascara.moveTo(-1920,-1280);
-        this.mascara.lineTo(1920*2,-1280);
-        this.mascara.lineTo(1920*2,1280*2);
-        this.mascara.lineTo(-1920,1280*2);
-        this.mascara.lineTo(-1920,-1280);
-        this.mascara.lineTo(854,596);
-        this.mascara.lineTo(902,542);
-        this.mascara.lineTo(960,528);
-        this.mascara.lineTo(1034,556);
-        this.mascara.lineTo(1064,604);
-        this.mascara.lineTo(1068,670);
-        this.mascara.lineTo(1032,724);
-        this.mascara.lineTo(966,750);
-        this.mascara.lineTo(902,734);
-        this.mascara.lineTo(854,676);
-        this.mascara.lineTo(854,594);
-        // end the fill
-        this.mascara.endFill();
-        this.mascara.position.x = 500;
-        // this.addChild(this.mascara);
-        //this.addChild(this.rainContainer);
-        // this.rainContainer.mask = this.mascara;
+        //add rain particles
+        // var tempRain = null;
+        // this.vecRain = [];
+        // for (var j = 300; j >= 0; j--) {
+        //     tempRain = new RainParticle(50, 5, windowWidth + 200, windowHeight, 'left');
+        //     this.rainContainer.addChild(tempRain.content);
+        //     this.vecRain.push(tempRain);
+        // }
+        // this.addChild(this.rainContainer);
 
         this.graphDebug = new PIXI.Graphics();
         this.addChild(this.graphDebug);
@@ -164,67 +91,7 @@ var DesktopMainScreen = AbstractScreen.extend({
         this.collisionSystem = new BoundCollisionSystem(this, true);
         // console.log(this.collisionSystem,'col system');
     },
-    removePosition:function(position){
-        for (var i = this.vecPositions.length - 1; i >= 0; i--) {
-            if(this.vecPositions[i] === position)
-            {
-                this.vecPositions.splice(i,1);
-            }
-        }
-    },
-    addPosition:function(position){
-        var exists = false;
 
-        for (var i = this.vecPositions.length - 1; i >= 0; i--) {
-            if(this.vecPositions[i] === position)
-            {
-                exists = true;
-            }
-        }
-
-        if(!exists){
-            this.vecPositions.push(position);
-        }
-    },
-    updatePlayerVel:function()
-    {
-        if(this.player && this.vecPositions){
-            var hasAxysY = false;
-            var hasAxysX = false;
-            if(this.vecPositions.length === 0){
-                this.player.virtualVelocity.x = 0;
-                this.player.virtualVelocity.y = 0;
-            }
-            for (var i = this.vecPositions.length - 1; i >= 0; i--) {
-
-                if(this.vecPositions[i] === 'up'){
-                    this.player.virtualVelocity.y = -this.player.defaultVelocity;
-                    hasAxysY = true;
-                }
-                else if(this.vecPositions[i] === 'down'){
-                    this.player.virtualVelocity.y = this.player.defaultVelocity;
-                    hasAxysY = true;
-                }
-
-                if(this.vecPositions[i] === 'left'){
-                    this.player.virtualVelocity.x = -this.player.defaultVelocity;
-                    hasAxysX = true;
-                }
-                else if(this.vecPositions[i] === 'right'){
-                    this.player.virtualVelocity.x = this.player.defaultVelocity;
-                    hasAxysX = true;
-                }
-            }
-
-            if(!hasAxysY){
-                this.player.virtualVelocity.y = 0;
-            }
-            if(!hasAxysX){
-                this.player.virtualVelocity.x = 0;
-            }
-
-        }
-    },
     //colocar isso dentro do personagem
     shoot:function(){
         var self = this;
@@ -232,7 +99,8 @@ var DesktopMainScreen = AbstractScreen.extend({
         angle = angle * 180 / Math.PI * -1;
         angle += 90 + 180;
         angle = angle / 180 * Math.PI;
-        for (var i = 0; i < 10; i++) {
+        var quant = 1;
+        for (var i = 1; i <= quant; i++) {
             var tempFire = new Fire({x:this.player.fireSpeed * Math.sin(angle * i), y: this.player.fireSpeed * Math.cos(angle * i)});
             tempFire.timeLive = this.player.fireStepLive;
             tempFire.power = this.player.firePower;
@@ -244,18 +112,19 @@ var DesktopMainScreen = AbstractScreen.extend({
     },
     update:function()
     {
-       // console.log(this.mouseDown);
-
         if(this.player){
-            
+            if(this.layerManager){
+                this.layerManager.update();
+            }
             if(this.mouseDown){
                 this.player.fireFreqAcum --;
-                //console.log(this.player.fireFreqAcum);
                 if(this.player.fireFreqAcum <= 0){
                     this.shoot();
                 }
             }
+            //collide entities with entities
             this.entityLayer.collideChilds(this.player);
+            //collide entities with environment
             this.environmentLayer.collideChilds(this.player);
             //zera as posições aqui, caso encontre uma porte, por isso a colisao antes
             if(((this.player.getPosition().x + this.player.virtualVelocity.x < this.margin.x ) && this.player.virtualVelocity.x < 0) ||
@@ -272,37 +141,29 @@ var DesktopMainScreen = AbstractScreen.extend({
                     this.entityLayer.collideChilds(this.entityLayer.childs[i]);
                 }
             }
-            
+
             this.collisionSystem.applyCollision(this.entityLayer.childs, this.entityLayer.childs);
         }
 
         this._super();
 
+        //change z-index
         this.entityLayer.getContent().children.sort(this.depthCompare);
-        // if(this.vecRain){
-        //     for (var i = this.vecRain.length - 1; i >= 0; i--) {
-        //         this.vecRain[i].update();
-        //     }
-        // }
-        // console.log('entity childs', this.entityLayer.childs.length);
+
         if(this.player && this.player.endLevel)
         {
             this.player.endLevel = false;
             this.currentNode = this.player.nextNode;
             this.currentPlayerSide = this.player.nextDoorSide;
-            this.killLevel(this.resetLevel);
+            this.endLevel(this.resetLevel);
             this.player = null;
         }
-       
-        // if(this.player){
-        //     console.log('updade here');
-        //     this.mascara.position.x = this.player.getPosition().x -1920/2;
-        //     this.mascara.position.y = this.player.getPosition().y -1280/2;
-        // }
+
     },
-    killLevel:function(callback){
+    endLevel:function(callback){
         // console.log('kill here');
         var self = this;
+        this.updateable = false;
         for (var k = this.entityLayer.childs.length - 1; k >= 0; k--) {
             this.entityLayer.childs[k].preKill();
         }
@@ -312,8 +173,12 @@ var DesktopMainScreen = AbstractScreen.extend({
         }
 
         // this.blackShape.alpha = 0.5;
-        TweenLite.to(this.blackShape, 0.5, {alpha:1});
-
+        // TweenLite.to(this.blackShape, 0.5, {alpha:1});
+        this.player.getContent().alpha = 0;
+        var texture = new PIXI.RenderTexture(windowWidth, windowHeight);
+        texture.render(this.levelContainer);
+        this.oldBackground = new PIXI.Sprite(texture);
+        this.addChild(this.oldBackground);
         setTimeout(function(){
             self.resetLevel();
         }, 700);
@@ -321,8 +186,10 @@ var DesktopMainScreen = AbstractScreen.extend({
     },
     resetLevel:function()
     {
-        this.vecPositions = [];
+        this.updateable = true;
+
         TweenLite.to(this.blackShape, 1, {alpha:0});
+
         var roomState = 'first room';
         switch(this.currentNode.mode)
         {
@@ -346,39 +213,46 @@ var DesktopMainScreen = AbstractScreen.extend({
         this.levelLabel.setText('room id:'+this.currentNode.id+'   -    state:'+roomState);
         this.level = getRandomLevel();
 
-        
         this.player = new Player();
         this.player.build();
 
-
-
+        var beforeRoom = {x:0, y:0};
         if(this.currentPlayerSide === 'up')
         {
             this.player.setPosition(windowWidth/2,windowHeight - this.margin.y- this.player.height);
-
+            beforeRoom.y = -windowHeight;
         }else if(this.currentPlayerSide === 'down')
         {
             this.player.setPosition(windowWidth/2,this.margin.y );
+            beforeRoom.y = windowHeight;
         }else if(this.currentPlayerSide === 'left')
         {
             this.player.setPosition(windowWidth - this.margin.x - this.player.width,windowHeight/2);
+            beforeRoom.x = -windowWidth;
         }else if(this.currentPlayerSide === 'right')
         {
             this.player.setPosition(this.margin.x,windowHeight/2);
+            beforeRoom.x = windowWidth;
+        }
+
+
+        TweenLite.from(this.levelContainer, 0.7, beforeRoom);
+        if(this.oldBackground){
+            TweenLite.to(this.oldBackground, 0.7, {x:beforeRoom.x * -1, y:beforeRoom.y * -1});
         }
 
         this.heart = new Enemy();
         this.heart.build();
-       
-        this.fly = new FlightEnemy(500,500);
-        this.fly.build();
-        this.heart.setPosition(700,200);
-        this.fly.setPosition(100,200);
-        
+
+        // this.fly = new FlightEnemy(500,500);
+        // this.fly.build();
+        // this.heart.setPosition(700,200);
+        // this.fly.setPosition(100,200);
+
         this.entityLayer.addChild(this.player);
-        this.entityLayer.addChild(this.heart);
-        this.entityLayer.addChild(this.fly);
-        
+        // this.entityLayer.addChild(this.heart);
+        // this.entityLayer.addChild(this.fly);
+
 
         for (var i = this.level.length - 1; i >= 0; i--) {
             for (var j = this.level[i].length - 1; j >= 0; j--) {
@@ -388,7 +262,7 @@ var DesktopMainScreen = AbstractScreen.extend({
                     obs.build();
                     obs.setPosition((j)* APP.tileSize.x+ this.margin.x, (i+1)* APP.tileSize.y+ this.margin.y);
                     this.entityLayer.addChild(obs);
-                    
+
                 }
             }
         }

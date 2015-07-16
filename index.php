@@ -12,15 +12,16 @@
 
 		<link rel="shortcut icon" href="favicon.ico">
 
-		<link rel="stylesheet" href="_dist/css/main.css">
+		<link rel="stylesheet" href="dist/css/main.css">
 		<script src="https://cdn.firebase.com/js/client/1.0.21/firebase.js"></script>
 
-		<style type="text/css">	
+		<style type="text/css">
 		body{
 			margin: 0;
 			padding: 0;
 			background-color: #201E3B;
 			font-family: sans-serif;
+			overflow: hidden;
 		}
 
 		.game {
@@ -42,8 +43,8 @@
 	<body>
 		<div id="qrcode" style="display:none"></div>
 
-		<script src="_dist/js/lib/plugins.js"></script>
-		<script src="_dist/js/main.js"></script>
+		<script src="dist/js/lib/plugins.js"></script>
+		<script src="dist/js/main.js"></script>
 
 		<!-- <img src="https://api.qrserver.com/v1/create-qr-code/?data=HelloWorld&amp;size=100x100" alt="" title="" /> -->
 

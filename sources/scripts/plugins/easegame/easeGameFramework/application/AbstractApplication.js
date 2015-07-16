@@ -29,7 +29,7 @@ var AbstractApplication = Class.extend({
 	//inicia o carregamento dos assets
 	initLoad:function()
 	{
-		
+
 		var that = this;
 		this.loader.onComplete = function() {
 			that.onAssetsLoaded();

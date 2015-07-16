@@ -16,19 +16,19 @@ module.exports = function(grunt) {
         uglify : {
             options : {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
-                compress: {
-                    sequences: true, // join consecutive statemets with the “comma operator”
-                    properties: true, // optimize property access: a["foo"] → a.foo
-                    dead_code: true, // discard unreachable code
-                    conditionals: true, // optimize if-s and conditional expressions
-                    booleans: true, // optimize boolean expressions
-                    loops: true, // optimize loops
-                    unused: true, // drop unused variables/functions
-                    if_return: true, // optimize if-s followed by return/continue
-                    join_vars: true // join var declarations
-                },
-                mangle: false,
-                beautify: true
+                // compress: {
+                //     sequences: true, // join consecutive statemets with the “comma operator”
+                //     properties: true, // optimize property access: a["foo"] → a.foo
+                //     dead_code: true, // discard unreachable code
+                //     conditionals: true, // optimize if-s and conditional expressions
+                //     booleans: true, // optimize boolean expressions
+                //     loops: true, // optimize loops
+                //     unused: true, // drop unused variables/functions
+                //     if_return: true, // optimize if-s followed by return/continue
+                //     join_vars: true // join var declarations
+                // },
+                // mangle: false,
+                // beautify: true
             },
 
             dist : {
@@ -45,13 +45,9 @@ module.exports = function(grunt) {
             plugins: {
                 dest: '<%= globalConfig.dest %>js/lib/plugins.js',
                 src: [
-                    '<%= globalConfig.src %>scripts/plugins/qrcode.min.js',
-                    '<%= globalConfig.src %>scripts/plugins/microevent.js',
-                    '<%= globalConfig.src %>scripts/plugins/proton.js',
-                    '<%= globalConfig.src %>scripts/plugins/hammer.min.js',
-                    '<%= globalConfig.src %>scripts/plugins/pixi.js',
-                    '<%= globalConfig.src %>scripts/plugins/modernizr-2.7.1.min.js',
                     '<%= globalConfig.src %>scripts/plugins/jquery-1.11.0.min.js',
+                    '<%= globalConfig.src %>scripts/plugins/microevent.js',
+                    '<%= globalConfig.src %>scripts/plugins/pixi.js',
                     '<%= globalConfig.src %>scripts/plugins/class.js',
                     '<%= globalConfig.src %>scripts/plugins/easegame/**/*.js'
                 ]
@@ -109,6 +105,7 @@ module.exports = function(grunt) {
             js: {
                 files: ['<%= jshint.all %>'],
                 tasks: ['jshint','uglify']
+                // tasks: ['jshint']
             }
         } // watch
     });

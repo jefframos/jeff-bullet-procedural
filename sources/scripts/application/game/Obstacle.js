@@ -4,8 +4,8 @@ var Obstacle = Entity.extend({
         this._super();
         this.updateable = true;
         this.collidable = true;
-        this.arrayObstacles = ['_dist/img/2.png','_dist/img/3.png','_dist/img/2.png'];
-  
+        this.arrayObstacles = ['dist/img/2.png','dist/img/3.png','dist/img/2.png'];
+
         this.srcImg =  this.arrayObstacles[imgId];
         this.type = 'environment';
         this.width = APP.tileSize.x;
