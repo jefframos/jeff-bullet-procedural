@@ -78,14 +78,15 @@ var DesktopMainScreen = AbstractScreen.extend({
         this.levelLabel = new PIXI.Text('', {fill:'white', align:'center', font:'bold 20px Arial'});
         this.addChild(this.levelLabel);
 
-        this.resetLevel();
-        this.minimap = new Minimap();
-        this.addChild(this.minimap);
-        this.minimap.build();
-        this.minimap.setPosition(windowWidth - 100,5);
-        this.minimap.getContent().scale.x = 0.3;
-        this.minimap.getContent().scale.y = 0.3;
 
+        this.minimap = new Minimap();
+        this.minimap.build(APP.gen);
+        this.addChild(this.minimap.getContent());
+        this.minimap.getContent().scale.x = 0.5;
+        this.minimap.getContent().scale.y = 0.5;
+        this.minimap.setPosition(windowWidth - this.minimap.getContent().width - 5,5);
+
+        this.resetLevel();
         // console.log(new BoundCollisionSystem(),'col system BoundCollisionSystem');
 
         this.collisionSystem = new BoundCollisionSystem(this, true);
@@ -112,16 +113,15 @@ var DesktopMainScreen = AbstractScreen.extend({
     },
     update:function()
     {
+        this._super();
         if(this.player){
-            if(this.layerManager){
-                this.layerManager.update();
-            }
             if(this.mouseDown){
                 this.player.fireFreqAcum --;
                 if(this.player.fireFreqAcum <= 0){
                     this.shoot();
                 }
             }
+            this.collisionSystem.applyCollision(this.entityLayer.childs, this.entityLayer.childs);
             //collide entities with entities
             this.entityLayer.collideChilds(this.player);
             //collide entities with environment
@@ -141,11 +141,12 @@ var DesktopMainScreen = AbstractScreen.extend({
                     this.entityLayer.collideChilds(this.entityLayer.childs[i]);
                 }
             }
+            if(this.layerManager){
+                this.layerManager.update();
+            }
 
-            this.collisionSystem.applyCollision(this.entityLayer.childs, this.entityLayer.childs);
         }
 
-        this._super();
 
         //change z-index
         this.entityLayer.getContent().children.sort(this.depthCompare);
@@ -212,7 +213,8 @@ var DesktopMainScreen = AbstractScreen.extend({
         //console.log(this, 'ESSE É O ID DO LEVEL ATUAL -> ', this.currentNode);
         this.levelLabel.setText('room id:'+this.currentNode.id+'   -    state:'+roomState);
         this.level = getRandomLevel();
-
+        console.log(this.currentNode);
+        this.minimap.updatePlayerNode(this.currentNode.position);
         this.player = new Player();
         this.player.build();
 

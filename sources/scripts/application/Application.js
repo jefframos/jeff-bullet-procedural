@@ -12,7 +12,7 @@ var Application = AbstractApplication.extend({
         this.gen = new DungeonGenerator();
         //genereta the dungeon with a seed, and sizes
         this.gen.generate(Math.random() * 0xFFFFFF, 1, [10, 15], [12,12], 5);
-        this.gen.log();
+        // this.gen.log();
         //size of tile
         this.tileSize = {x:80, y: 80};
 	},

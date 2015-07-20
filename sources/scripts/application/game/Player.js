@@ -23,9 +23,10 @@ var Player = SpritesheetEntity.extend({
         this.fireStepLive = 20;
         this.firePower = 20;
 
-
+        this.touchCollection = {up:false, down:false,left:false, right:false, middleUp:false,middleDown:false,bottomLeft:false,bottomRight:false,topLeft:false,topRight:false};
     },
     debug:function(){
+
         // draw a shape
         // console.log('debug', this.debugGraphic.parent);
         if(this.debugGraphic.parent === null && this.getContent().parent !== null)
@@ -93,19 +94,21 @@ var Player = SpritesheetEntity.extend({
 
     },
     update: function(){
+        // console.log(this.isTouch);
         if(!this.isTouch){
             this.velocity = this.virtualVelocity;
         }
-
         if(this.deading){
             this.setVelocity(0,0);
         }
-        this._super();
         this.debugPolygon(0x556644, true);
-
         if(this.getTexture()){
             this.getContent().position.x = 20;
         }
+        // if(this.lockUp && this.velocity.y < 0){
+        //     this.velocity.y = 0;
+        // }
+        this._super();
     },
     preKill:function(){
         this._super();
@@ -120,11 +123,6 @@ var Player = SpritesheetEntity.extend({
         this.setVelocity(0,0);
         this.updateable = true;
         this.vecPositions = [];
-        // console.log('radius player', this.range);
-
-        // this.spritesheet.setScale(0,0);
-        // TweenLite.to(this.spritesheet.scale, 1, {delay:0.4, x:1,y:1, ease:'easeOutElastic'});
-
     },
     collide:function(arrayCollide){
         // console.log('playerCollide', arrayCollide[0].type);
@@ -157,11 +155,26 @@ var Player = SpritesheetEntity.extend({
         }
         if(collection.up|| collection.down && this.virtualVelocity.y !== 0)
         {
+            console.log('Y TOUCH');
             this.velocity.y = 0;
         }
     },
+    // touch: function(collection, isTouch){
+    //     console.log(this.touchCollection);
+    //     this.touchCollection = collection;
+    //     this.isTouch = isTouch;
+    //     if(collection.left||collection.right && this.virtualVelocity.x !== 0)
+    //     {
+    //         this.velocity.x = 0;
+    //     }
+    //     if(collection.up|| collection.down && this.virtualVelocity.y !== 0)
+    //     {
+    //         this.virtualVelocity.y = this.velocity.y = 0;
+    //     }
+    // },
     updatePlayerVel:function(vecPositions)
     {
+        console.log('UPDATE');
         if(this && vecPositions){
             var hasAxysY = false;
             var hasAxysX = false;
@@ -202,4 +215,52 @@ var Player = SpritesheetEntity.extend({
 
         }
     },
+    // updatePlayerVel:function(vecPositions)
+    // {
+    //     if(this && vecPositions){
+    //         var hasAxysY = false;
+    //         var hasAxysX = false;
+    //         if(vecPositions.length === 0){
+    //             this.virtualVelocity.x = 0;
+    //             this.virtualVelocity.y = 0;
+    //             return;
+    //         }
+    //         for (var i = vecPositions.length - 1; i >= 0; i--) {
+
+    //             if(vecPositions[i] === 'up' && !this.touchCollection.up){
+    //                 this.virtualVelocity.y = -this.defaultVelocity;
+    //                 this.touchCollection.down = false;
+    //                 hasAxysY = true;
+    //             }
+    //             else if(vecPositions[i] === 'down' && !this.touchCollection.down){
+    //                 this.virtualVelocity.y = this.defaultVelocity;
+    //                 this.touchCollection.up = false;
+    //                 hasAxysY = true;
+    //             }
+
+    //             if(vecPositions[i] === 'left' && !this.touchCollection.left){
+    //                 this.virtualVelocity.x = -this.defaultVelocity;
+    //                 this.touchCollection.right = false;
+    //                 this.touchCollection.down = false;
+    //                 hasAxysX = true;
+    //             }
+    //             else if(vecPositions[i] === 'right' && !this.touchCollection.right){
+    //                 this.virtualVelocity.x = this.defaultVelocity;
+    //                 this.touchCollection.left = false;
+    //                 this.touchCollection.down = false;
+    //                 hasAxysX = true;
+    //             }
+    //         }
+    //         if(this.virtualVelocity.y !== 0 && this.virtualVelocity.x !== 0){
+    //             this.virtualVelocity.y /= 1.5;
+    //             this.virtualVelocity.x /= 1.5;
+    //         }
+    //         if(!hasAxysY){
+    //             this.virtualVelocity.y = 0;
+    //         }
+    //         if(!hasAxysX){
+    //             this.virtualVelocity.x = 0;
+    //         }
+    //     }
+    // },
 });
