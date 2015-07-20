@@ -113,6 +113,7 @@ var Minimap = Class.extend({
 					}
 					// console.log(i,j);
 					tempRoomView.positionID = {i:j,j:i};
+					tempRoomView.node = item[i];
 					this.arrayRooms.push(tempRoomView);
 				}
 			}
@@ -132,18 +133,44 @@ var Minimap = Class.extend({
 	},
 	updatePlayerNode:function(position){
 		var tempDist = 0;
+		var currentNode = null;
+		var childs = [];
 		for (var i = 0; i < this.arrayRooms.length; i++) {
 			if(position && position[0] === this.arrayRooms[i].positionID.i && position[1] === this.arrayRooms[i].positionID.j){
-				this.arrayRooms[i].alpha = 1;
-			}else{
-				if(position){
-					tempDist = pointDistance(position[0] , position[1],  this.arrayRooms[i].positionID.i , this.arrayRooms[i].positionID.j);
+				currentNode = this.arrayRooms[i];
+				for (var j = 0; j < this.arrayRooms[i].node.childrenSides.length; j++) {
+					if(this.arrayRooms[i].node.childrenSides[j]){
+						var tempPosition = this.arrayRooms[i].node.childrenSides[j].position;
+						for (var k = 0; k < this.arrayRooms.length; k++) {
+							if(this.arrayRooms[k].positionID.j === tempPosition[0] && this.arrayRooms[k].positionID.i === tempPosition[1]){
+								childs.push(this.arrayRooms[k]);
+							}
+						}
+					}
 				}
-				this.arrayRooms[i].alpha = tempDist <= 1?1:0;
+
+			}else if(!this.arrayRooms[i].active){
+				this.arrayRooms[i].alpha = 0;
 			}
 		}
+		console.log(childs);
+		for (var m = 0; m < childs.length; m++) {
+			this.showNode(childs[m]);
+		}
+		this.showNode(currentNode, 0xFF0000);
 		//CENTRALIZAR O MINIMAP AQUI
 		console.log(this.roomsContainer.width, position);
+	},
+	showNode:function(node, tint){
+		if(!node){
+			return;
+		}
+		node.alpha = 1;
+		if(tint){
+			node.tint = tint;
+		}else{
+			node.tint = 0xFFFFFF;
+		}
 	},
 	getContent:function(){
 		return this.container;

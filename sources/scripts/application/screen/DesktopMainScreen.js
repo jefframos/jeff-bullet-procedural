@@ -49,6 +49,7 @@ var DesktopMainScreen = AbstractScreen.extend({
 
         this.currentNode = APP.gen.firstNode;
         this.rainContainer = new PIXI.DisplayObjectContainer();
+        this.UIContainer = new PIXI.DisplayObjectContainer();
 
         var self = this;
 
@@ -81,7 +82,7 @@ var DesktopMainScreen = AbstractScreen.extend({
 
         this.minimap = new Minimap();
         this.minimap.build(APP.gen);
-        this.addChild(this.minimap.getContent());
+        this.UIContainer.addChild(this.minimap.getContent());
         this.minimap.getContent().scale.x = 0.5;
         this.minimap.getContent().scale.y = 0.5;
         this.minimap.setPosition(windowWidth - this.minimap.getContent().width - 5,5);
@@ -90,6 +91,8 @@ var DesktopMainScreen = AbstractScreen.extend({
         // console.log(new BoundCollisionSystem(),'col system BoundCollisionSystem');
 
         this.collisionSystem = new BoundCollisionSystem(this, true);
+
+        this.addChild(this.UIContainer);
         // console.log(this.collisionSystem,'col system');
     },
 
@@ -159,7 +162,6 @@ var DesktopMainScreen = AbstractScreen.extend({
             this.endLevel(this.resetLevel);
             this.player = null;
         }
-
     },
     endLevel:function(callback){
         // console.log('kill here');
@@ -179,7 +181,7 @@ var DesktopMainScreen = AbstractScreen.extend({
         var texture = new PIXI.RenderTexture(windowWidth, windowHeight);
         texture.render(this.levelContainer);
         this.oldBackground = new PIXI.Sprite(texture);
-        this.addChild(this.oldBackground);
+        this.levelContainer.addChild(this.oldBackground);
         setTimeout(function(){
             self.resetLevel();
         }, 700);
