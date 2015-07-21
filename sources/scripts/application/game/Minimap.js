@@ -9,8 +9,10 @@ var Minimap = Class.extend({
 
 		this.container = new PIXI.DisplayObjectContainer();
 		this.roomsContainer = new PIXI.DisplayObjectContainer();
+		this.mask = new PIXI.Graphics();
 		this.container.addChild(this.background);
 		this.container.addChild(this.roomsContainer);
+		this.container.addChild(this.mask);
 		this.arrayRooms = [];
 		this.margin = {x: 15, y: 15};
 		this.sizeTile = {x:80, y:50};
@@ -122,20 +124,28 @@ var Minimap = Class.extend({
 			this.arrayRooms[m].position.x -= minX * this.sizeTile.x - this.margin.x - this.sizeGraph.x/2;
 			this.arrayRooms[m].position.y -= minY * this.sizeTile.y - this.margin.y - this.sizeGraph.y/2;
 		}
+
+		this.mask.beginFill(0);
+		this.mask.drawRect(0,0,200,200);
+		this.container.addChild(this.mask);
+		// this.updatePlayerNode();
 		// console.log(minX,minY,maxX,maxY, maxX * this.margin.x, this.margin.x);
 		this.background.beginFill(0x0);
-		this.background.drawRect(0,0,
-			(maxX - minX + 1) * this.sizeTile.x + this.margin.x * 2 + this.sizeGraph.x/2,
-			(maxY - minY + 1) * this.sizeTile.y+ this.margin.y * 2+ this.sizeGraph.y/2);
+		this.background.drawRect(0,0,this.mask.width,this.mask.height);
+		// this.background.drawRect(0,0,
+		// 	(maxX - minX + 1) * this.sizeTile.x + this.margin.x * 2 + this.sizeGraph.x/2,
+		// 	(maxY - minY + 1) * this.sizeTile.y+ this.margin.y * 2+ this.sizeGraph.y/2);
 		this.background.endFill();
 		this.background.alpha = 0.5;
-		this.updatePlayerNode();
+
+		this.container.mask = this.mask;
 	},
 	updatePlayerNode:function(position){
 		var tempDist = 0;
 		var currentNode = null;
 		var childs = [];
 		for (var i = 0; i < this.arrayRooms.length; i++) {
+			this.arrayRooms[i].alpha = 0.4;
 			if(position && position[0] === this.arrayRooms[i].positionID.i && position[1] === this.arrayRooms[i].positionID.j){
 				currentNode = this.arrayRooms[i];
 				for (var j = 0; j < this.arrayRooms[i].node.childrenSides.length; j++) {
@@ -149,28 +159,30 @@ var Minimap = Class.extend({
 					}
 				}
 
-			}else if(!this.arrayRooms[i].active){
-				this.arrayRooms[i].alpha = 0;
 			}
+			// else if(!this.arrayRooms[i].active){
+			// 	this.arrayRooms[i].alpha = 0;
+			// }
 		}
 		console.log(childs);
-		for (var m = 0; m < childs.length; m++) {
-			this.showNode(childs[m]);
-		}
+		// for (var m = 0; m < childs.length; m++) {
+		// 	this.showNode(childs[m]);
+		// }
 		this.showNode(currentNode, 0xFF0000);
 		//CENTRALIZAR O MINIMAP AQUI
-		console.log(this.roomsContainer.width, position);
+		TweenLite.to(this.roomsContainer, 0.5, {x:this.background.width / 2 - currentNode.position.x - currentNode.width / 2,
+			y:this.background.height / 2 - currentNode.position.y - currentNode.height / 2});
 	},
 	showNode:function(node, tint){
 		if(!node){
 			return;
 		}
 		node.alpha = 1;
-		if(tint){
-			node.tint = tint;
-		}else{
-			node.tint = 0xFFFFFF;
-		}
+		// if(tint){
+		// 	node.tint = tint;
+		// }else{
+		// 	node.tint = 0xFFFFFF;
+		// }
 	},
 	getContent:function(){
 		return this.container;
