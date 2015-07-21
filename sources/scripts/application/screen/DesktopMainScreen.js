@@ -85,7 +85,7 @@ var DesktopMainScreen = AbstractScreen.extend({
         this.UIContainer.addChild(this.minimap.getContent());
         this.minimap.getContent().scale.x = 0.5;
         this.minimap.getContent().scale.y = 0.5;
-        this.minimap.setPosition(windowWidth - this.minimap.getContent().width - 5,5);
+        this.minimap.setPosition(windowWidth - this.minimap.mask.width * this.minimap.getContent().scale.x - 5,5);
 
         this.resetLevel();
         // console.log(new BoundCollisionSystem(),'col system BoundCollisionSystem');
